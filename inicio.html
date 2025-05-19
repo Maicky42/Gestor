@@ -1,0 +1,166 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/forms@0.5.2/dist/forms.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <script src="js/js.js" defer></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirmação</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          Tem certeza de que deseja terminar a sessão?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <a href="index.html" class="btn btn-danger">Sim, terminar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Gestor</h2>
+      <!-- <button id="closeSidebar">&times;</button> -->
+    </div>
+    <nav>
+      <a href="#"><i class="bi bi-house"></i> Início</a>
+      <a href="cadastramento.html"><i class="bi bi-houses"></i> Cadastramentos</a>
+      <a href=""><i class="bi bi-emoji-smile"></i> Perfil</a>
+      <a href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-door-closed"></i> Terminar
+        sessão</a>
+
+      <!-- <a href="#"><i class="fas fa-users"></i> Usuários</a>
+      <a href="#"><i class="fas fa-chart-bar"></i> Estatísticas</a>
+      <a href="#"><i class="fas fa-cogs"></i> Configurações</a> -->
+    </nav>
+  </div>
+
+  <header class="mobile-header">
+    <h1>Gestor</h1>
+    <button id="openSidebar"><i class="fas fa-bars"></i></button>
+  </header>
+
+  <main>
+    <section class="notification">
+      <!-- d-none -->
+      <div id="notification-message" class="alert alert-info d-flex align-items-center" role="alert">
+        <i class="bi bi-bell-fill me-2" style="font-size: 1.5rem;"></i>
+        <div>
+          Evite juros e mantenha sua unidade regularizada. Para mais informações ou comprovativo de pagamento, entre em
+          contato com a administração.
+        </div>
+      </div>
+    </section>
+    <section class="cards">
+      <div class="card" data-value="1250">
+        <h3>Total arrecadado no mês</h3>
+        <p id="mes-actual"></p>
+        <script>
+          const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+          document.getElementById('mes-actual').textContent = "Mês actual: " + meses[new Date().getMonth()];
+        </script>
+        <p class="value">0</p>
+      </div>
+      <div class="card" data-value="785">
+        <h3>Total de despesas</h3>
+        <p>Limpeza, Segurança, Energia, Água</p>
+        <p class="value">0</p>
+      </div>
+      <div class="card" data-value="4320">
+        <h3>Saldo actual do mês</h3>
+        <p id="mes-actual2"></p>
+        <script>
+          const meses2 = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+          document.getElementById('mes-actual2').textContent = "Mês actual: " + meses[new Date().getMonth()];
+        </script>
+        <p class="value">0</p>
+      </div>
+    </section>
+
+    <section class="grafico">
+      <h2>Estatísticas Mensais</h2>
+      <canvas id="graficoEstatisticas"></canvas>
+      <div id="dados-mensais" class="hidden">
+        <span data-label="Jan" data-value="120"></span>
+        <span data-label="Fev" data-value="150"></span>
+        <span data-label="Mar" data-value="180"></span>
+        <span data-label="Abr" data-value="220"></span>
+        <span data-label="Mai" data-value="90"></span>
+        <span data-label="Jun" data-value="300"></span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll('[data-value]').forEach(card => {
+      const target = +card.getAttribute('data-value');
+      const valueEl = card.querySelector('.value');
+      let count = 0;
+      const step = Math.ceil(target / 50);
+      const interval = setInterval(() => {
+        count += step;
+        if (count >= target) {
+          count = target;
+          clearInterval(interval);
+        }
+        valueEl.textContent = count;
+      }, 20);
+    });
+
+    const spans = document.querySelectorAll('#dados-mensais span');
+    const labels = [], valores = [];
+
+    spans.forEach(el => {
+      labels.push(el.getAttribute('data-label'));
+      valores.push(Number(el.getAttribute('data-value')));
+    });
+
+    new Chart(document.getElementById('graficoEstatisticas'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Registros por mês',
+          data: valores,
+          backgroundColor: '#f39c12',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
